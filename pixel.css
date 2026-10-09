@@ -1,0 +1,173 @@
+/* =========================================================
+   Pixel art: khung pixel, biểu tượng pixel, cảnh đêm, hộp thoại, thanh cấp độ kỹ năng.
+   Hình do pixel.js vẽ (dữ liệu trong sprites.js). Màu bám theo bảng màu của style.css.
+   ========================================================= */
+:root {
+  --pixel: "VT323", var(--mono);
+  /* Khung 12x12 cắt 9 mảnh (border-image): viền đen bậc thang, dải kim loại, chỉ sáng cyan */
+  --px-frame: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'><path fill='%2304070e' d='M2 0h8v1h1v1h1v8h-1v1h-1v1H2v-1H1v-1H0V2h1V1h1z'/><path fill='%231a2742' d='M3 1h6v1h1v1h1v6h-1v1h-1v1H3v-1H2V9H1V3h1V2h1z'/><path fill='%23334a78' d='M3 1h6v1H3zM1 3h1v6H1z'/><path fill='%23101a2e' d='M3 10h6v1H3zM10 3h1v6h-1z'/><path fill='%2322d3ee' fill-opacity='.55' d='M3 3h6v6H3z'/><path fill='%230a1222' d='M4 4h4v4H4z'/></svg>");
+  /* Khung gỗ cho bảng tên, điểm ấm kiểu Stardew */
+  --px-wood: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' shape-rendering='crispEdges'><path fill='%231f140d' d='M2 0h8v1h1v1h1v8h-1v1h-1v1H2v-1H1v-1H0V2h1V1h1z'/><path fill='%238b5e3c' d='M3 1h6v1h1v1h1v6h-1v1h-1v1H3v-1H2V9H1V3h1V2h1z'/><path fill='%23b98154' d='M3 1h6v1H3zM1 3h1v6H1z'/><path fill='%235c3d27' d='M3 10h6v1H3zM10 3h1v6h-1z'/><path fill='%23f5c16c' fill-opacity='.7' d='M3 3h6v6H3z'/><path fill='%236b4a32' d='M4 4h4v4H4z'/></svg>");
+}
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- Biểu tượng pixel (pixel.js thêm .px-on và ảnh .px-ic) ---------- */
+.px-on > .icon { display: none; }
+.px-ic { display: block; width: 24px; height: 24px; flex: none; image-rendering: pixelated; }
+/* Ô chứa biểu tượng kiểu ô đồ trong game */
+.ic-box.px-on, .node-ic.px-on, .v-node.px-on, .tl-dot.px-on, .lvl-ic {
+  --fw: 8px;
+  border: var(--fw) solid transparent; border-radius: 0;
+  border-image: var(--px-frame) 4 fill / var(--fw) stretch;
+  background: none; box-shadow: none;
+  filter: drop-shadow(0 8px 14px rgba(34, 211, 238, .16));
+}
+.v-node.px-on .px-ic { width: 36px; height: 36px; }
+.edu > .ic-box.px-on .px-ic { width: 48px; height: 48px; }
+.card:hover .px-on .px-ic, .node:hover .px-ic, .lvl:hover .px-ic { animation: px-hop .5s steps(2) 1; }
+@keyframes px-hop { 50% { translate: 0 -3px; } }
+
+/* Dòng thời gian: biểu tượng xám, cuộn tới thì sáng lên */
+.tl-dot.px-on { color: inherit; }
+.js .tl-item:not(.in) .tl-dot.px-on .px-ic { filter: grayscale(1) brightness(.55); }
+.tl-item.in .tl-dot.px-on { box-shadow: none; filter: drop-shadow(0 0 12px rgba(34, 211, 238, .55)); }
+.tl-dot .px-ic { transition: filter .5s; }
+
+/* ---------- Trời sao pixel ở phần mở đầu ---------- */
+.sky { position: absolute; top: 0; left: 0; z-index: -1; pointer-events: none; image-rendering: pixelated; }
+
+/* ---------- Dải phong cảnh và nhân vật ---------- */
+.land { position: relative; margin-top: 48px; overflow: hidden; }
+.land > canvas { display: block; image-rendering: pixelated; }
+.js .land + .container .flow-wrap { margin-top: 14px; }
+.npc {
+  position: absolute; left: 0; bottom: 0; padding: 0; border: 0; background: none;
+  cursor: pointer; will-change: transform;
+}
+.npc canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.npc:hover canvas, .npc:focus-visible canvas { filter: drop-shadow(0 0 3px rgba(103, 232, 249, .9)); }
+.npc:focus-visible { outline: 2px dashed var(--c1); outline-offset: 3px; border-radius: 0; }
+
+/* ---------- Hộp thoại kiểu Stardew ---------- */
+.dlg {
+  position: fixed; left: 50%; bottom: 20px; z-index: 65;
+  width: min(760px, 100% - 24px);
+  opacity: 0; translate: -50% 28px;
+  transition: opacity .25s, translate .25s steps(4);
+}
+.dlg.show { opacity: 1; translate: -50% 0; }
+.dlg[hidden], .dlg [hidden] { display: none !important; }
+.dlg-box {
+  --fw: 16px;
+  position: relative; display: grid; grid-template-columns: 1fr auto; gap: 18px;
+  padding: 10px 12px 12px 14px; cursor: pointer;
+  border: var(--fw) solid transparent; border-image: var(--px-frame) 4 fill / var(--fw) stretch;
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, .65));
+}
+.dlg-box:focus { outline: none; }
+.dlg-box:focus-visible { outline: 2px dashed var(--c1); outline-offset: 6px; }
+.dlg-body { position: relative; min-width: 0; padding-bottom: 18px; }
+.dlg-text {
+  min-height: calc(1.75em * 3);
+  font-family: var(--mono); font-size: 15.5px; line-height: 1.75; color: #e6edf7;
+}
+.dlg-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+/* Mũi tên nhấp nháy "bấm để đọc tiếp", vẽ bằng bóng đổ từng ô 3px */
+.dlg-hint {
+  position: absolute; right: 16px; bottom: 6px;
+  width: 3px; height: 3px; background: currentColor; color: #67e8f9;
+  box-shadow: 3px 0, 6px 0, 9px 0, 12px 0, 3px 3px, 6px 3px, 9px 3px, 6px 6px;
+  animation: px-bob .8s steps(1) infinite;
+}
+@keyframes px-bob { 50% { translate: 0 3px; } }
+.dlg-face { display: grid; justify-items: center; align-content: start; gap: 8px; }
+.dlg-portrait {
+  --fw: 8px; display: block;
+  border: var(--fw) solid transparent; border-image: var(--px-frame) 4 fill / var(--fw) stretch;
+}
+.dlg-portrait canvas {
+  display: block; width: 80px; height: 80px; image-rendering: pixelated;
+  background: linear-gradient(#13284a, #0a1529);
+}
+.dlg-name {
+  --fw: 8px;
+  padding: 0 8px; border: var(--fw) solid transparent; border-image: var(--px-wood) 4 fill / var(--fw) stretch;
+  font-family: var(--pixel); font-size: 22px; font-weight: 400; line-height: 1; color: #fff4d6;
+  text-shadow: 2px 2px 0 #3b2416;
+}
+.dlg-x {
+  position: absolute; top: -26px; right: -26px;
+  display: grid; place-items: center; width: 28px; height: 28px; padding: 0 0 3px;
+  border: 0; cursor: pointer; background: #f43f5e; color: #fff;
+  font-family: var(--pixel); font-size: 26px; line-height: 1;
+  box-shadow: inset 0 0 0 3px #04070e, inset 0 6px 0 -3px #fb7185, inset 0 -6px 0 -3px #9f1239;
+}
+.dlg-x:hover { background: #fb7185; }
+
+/* ---------- Kỹ năng: thanh cấp độ 5 ô ---------- */
+.lvls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.lvl {
+  --fw: 12px;
+  display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: "ic name num" "ic bar bar";
+  align-items: center; gap: 8px 14px; padding: 6px 8px;
+  border: var(--fw) solid transparent; border-image: var(--px-frame) 4 fill / var(--fw) stretch;
+  transition: transform .5s var(--ease), filter .3s;
+}
+.lvl:hover { transform: translateY(-5px); filter: drop-shadow(0 12px 22px rgba(34, 211, 238, .22)); }
+.js .lvl.reveal { transition: opacity .9s var(--ease) var(--d, 0s), translate .9s var(--ease) var(--d, 0s), transform .5s var(--ease), filter .3s; }
+.lvl-ic { grid-area: ic; display: grid; place-items: center; width: 60px; height: 60px; }
+.lvl-ic .px-ic { width: 36px; height: 36px; }
+.lvl-ic > .icon { width: 26px; height: 26px; color: var(--c1); }
+.lvl-name { grid-area: name; min-width: 0; }
+.lvl h3 { font-size: 17px; font-weight: 700; line-height: 1.25; }
+.lvl p { font-size: 13px; line-height: 1.4; color: var(--muted); }
+.lvl-num { grid-area: num; align-self: start; font-family: var(--pixel); font-size: 24px; line-height: 1; color: #a5f3fc; white-space: nowrap; }
+.lvl-num small { font-size: 18px; color: var(--dim); }
+.lvl-bar { grid-area: bar; display: flex; gap: 4px; }
+.lvl-bar i { flex: 1; height: 16px; background: #111a2e; box-shadow: inset 0 0 0 2px #04070e; }
+.lvl-bar i.on {
+  background: var(--c);
+  box-shadow: inset 0 0 0 2px #04070e, inset 0 5px 0 rgba(255, 255, 255, .3), 0 0 14px -3px var(--c);
+}
+.lvl-bar i:nth-child(1) { --c: #22d3ee; --i: 0; }
+.lvl-bar i:nth-child(2) { --c: #38bdf8; --i: 1; }
+.lvl-bar i:nth-child(3) { --c: #6366f1; --i: 2; }
+.lvl-bar i:nth-child(4) { --c: #8b5cf6; --i: 3; }
+.lvl-bar i:nth-child(5) { --c: #a855f7; --i: 4; }
+/* Cuộn tới thì các ô sáng lần lượt */
+.js .lvl .lvl-bar i { transition: background-color 0s, box-shadow 0s; transition-delay: calc(.4s + var(--i) * .16s); }
+.js .lvl:not(.in) .lvl-bar i.on { background: #111a2e; box-shadow: inset 0 0 0 2px #04070e; }
+
+/* ---------- Bãi cỏ chân trang ---------- */
+.footer { position: relative; }
+.meadow { position: absolute; left: 0; bottom: 100%; pointer-events: none; image-rendering: pixelated; }
+
+/* ---------- Không có JS: ẩn phần chỉ vẽ được bằng canvas ---------- */
+.no-js .land, .no-js .sky, .no-js .meadow, .no-js .dlg { display: none; }
+
+@media (max-width: 900px) {
+  .lvls { grid-template-columns: repeat(2, 1fr); }
+  .land { margin-top: 36px; }
+}
+@media (max-width: 600px) {
+  .lvls { grid-template-columns: 1fr; }
+  .tl-dot.px-on { --fw: 4px; left: -48px; width: 30px; height: 30px; top: 22px; }
+  .tl-dot.px-on .px-ic { width: 22px; height: 22px; }
+  .dlg { bottom: 12px; }
+  .dlg-box { --fw: 12px; grid-template-columns: 1fr; gap: 6px; padding: 8px 10px 10px; }
+  .dlg-face { grid-row: 1; display: flex; align-items: center; gap: 10px; justify-content: flex-start; }
+  .dlg-portrait { --fw: 4px; }
+  .dlg-portrait canvas { width: 48px; height: 48px; }
+  .dlg-name { font-size: 20px; }
+  .dlg-text { font-size: 14.5px; min-height: calc(1.7em * 4); line-height: 1.7; }
+  .dlg-x { top: -20px; right: -20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dlg { transition: none; }
+}
+@media print {
+  .land, .sky, .meadow, .dlg { display: none !important; }
+}

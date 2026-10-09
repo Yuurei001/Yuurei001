@@ -64,7 +64,7 @@
       seen.unobserve(e.target);
     });
   }, { threshold: .15, rootMargin: '0px 0px -40px 0px' });
-  $$('.reveal, .tl-item, .viz, .dial, .langbox, .stats').forEach(el => seen.observe(el));
+  $$('.reveal, .tl-item, .viz, .dial, .lvl, .langbox, .stats').forEach(el => seen.observe(el));
 
   /* ---------- Số đếm lên (HTML ghi sẵn số cuối để tắt JS vẫn đúng) ---------- */
   if (!reduce) $$('[data-count]').forEach(el => {
@@ -159,70 +159,4 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
   }));
-
-  /* ---------- Mạng điểm nối nhau ở nền phần mở đầu ---------- */
-  const canvas = $('.net');
-  const hero = $('.hero');
-  if (canvas && hero) {
-    const ctx = canvas.getContext('2d');
-    let W = 0, H = 0, dpr = 1, pts = [], running = false, raf = 0;
-    const mouse = { x: -1e4, y: -1e4 };
-    const LINK = 140;
-
-    function size() {
-      dpr = Math.min(devicePixelRatio || 1, 2);
-      W = hero.clientWidth; H = hero.clientHeight;
-      canvas.width = W * dpr; canvas.height = H * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const n = Math.min(95, Math.round(W * H / 15000));
-      pts = Array.from({ length: n }, () => ({
-        x: Math.random() * W, y: Math.random() * H,
-        vx: (Math.random() - .5) * .35, vy: (Math.random() - .5) * .35,
-        r: Math.random() * 1.4 + .6,
-      }));
-      if (reduce) draw();
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, W, H);
-      for (let i = 0; i < pts.length; i++) {
-        const p = pts[i];
-        if (!reduce) {
-          p.x += p.vx; p.y += p.vy;
-          if (p.x < 0 || p.x > W) p.vx *= -1;
-          if (p.y < 0 || p.y > H) p.vy *= -1;
-        }
-        for (let j = i + 1; j < pts.length; j++) {
-          const q = pts[j], dx = p.x - q.x, dy = p.y - q.y, d = Math.hypot(dx, dy);
-          if (d < LINK) {
-            ctx.strokeStyle = `rgba(129, 140, 248, ${(1 - d / LINK) * .22})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
-          }
-        }
-        const md = Math.hypot(p.x - mouse.x, p.y - mouse.y);
-        if (md < 190) {
-          ctx.strokeStyle = `rgba(34, 211, 238, ${(1 - md / 190) * .55})`;
-          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
-        }
-        ctx.fillStyle = md < 190 ? 'rgba(103, 232, 249, .95)' : 'rgba(148, 163, 184, .55)';
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
-      }
-    }
-
-    const loop = () => { draw(); raf = requestAnimationFrame(loop); };
-    const start = () => { if (!running && !reduce) { running = true; loop(); } };
-    const stop = () => { running = false; cancelAnimationFrame(raf); };
-
-    new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop())).observe(hero);
-    document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
-    hero.addEventListener('pointermove', e => {
-      const r = hero.getBoundingClientRect();
-      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
-    });
-    hero.addEventListener('pointerleave', () => { mouse.x = mouse.y = -1e4; });
-    let rt;
-    addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(size, 150); });
-    size();
-  }
 })();

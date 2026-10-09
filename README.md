@@ -1,14 +1,23 @@
 # CV website - Nguyễn Ngọc Doanh
 
 Trang CV tĩnh (HTML, CSS, một file JS viết tay), không cần build, không dùng thư viện ngoài.
-Giao diện nền tối, nhiều hiệu ứng: mạng điểm nối nhau theo chuột, chữ tự gõ, sơ đồ luồng dữ liệu
-có chấm chạy, số đếm lên, dòng thời gian tự vẽ khi cuộn, thẻ dự án nghiêng 3D, vòng kỹ năng.
+Giao diện nền tối, nhiều hiệu ứng: chữ tự gõ, sơ đồ luồng dữ liệu có chấm chạy, số đếm lên,
+dòng thời gian tự vẽ khi cuộn, thẻ dự án nghiêng 3D.
+
+Điểm nhấn pixel art (kiểu Stardew Valley nhưng mang chất công nghệ):
+- Trời sao pixel ở phần mở đầu, gần con trỏ thì các sao nối thành mạng; thỉnh thoảng có sao băng.
+- Dải phong cảnh đêm: nhà xưởng, cột điện kéo cáp, gói dữ liệu chạy trên dây vào tủ máy chủ SQL.
+- Nhân vật đi trên cỏ, bấm vào (hoặc Tab rồi Enter) để mở hộp thoại kiểu game, Esc để đóng.
+- Biểu tượng pixel, thanh cấp độ kỹ năng 5 ô, mèo đuổi bit dữ liệu ở chân trang.
 
 ```
 index.html          Bản tiếng Việt
 en/index.html       Bản tiếng Anh
 style.css           Giao diện, dùng chung
 script.js           Hiệu ứng, dùng chung
+pixel.css           Khung pixel, hộp thoại, thanh cấp độ kỹ năng
+sprites.js          Hình pixel vẽ bằng lưới ký tự (biểu tượng, nhân vật, cây, mèo) và bảng màu
+pixel.js            Vẽ trời sao, dải phong cảnh, nhân vật, hộp thoại, biểu tượng pixel, bãi cỏ
 favicon.svg         Biểu tượng tab
 assets/cv/          CV PDF (tiếng Việt, tiếng Anh)
 avatar.jpg          Ảnh chân dung (tự thêm vào; chưa có thì hiện chữ ND)
@@ -47,7 +56,10 @@ Bản tiếng Anh nằm ở `https://<tài-khoản>.github.io/en/`.
 
 Sửa thẳng trong `index.html` và `en/index.html`. Nhớ sửa cả hai bản.
 
-- Mức kỹ năng (vòng tròn): `style="--p:80"` là phần trăm (4/5 = 80, 3/5 = 60), và số hiển thị trong `<b>4<small>/5</small></b>`.
+- Mức kỹ năng (thanh 5 ô): số ô có `class="on"` là mức, sửa cả chữ `LV 4<small>/5</small>` và `aria-label`.
+  Biểu tượng chọn bằng `data-px` (tên hình trong `sprites.js`, ví dụ `py`, `db`, `js`).
+- Câu thoại của nhân vật: các thẻ `<li>` trong `<ul class="dlg-lines">` ở cuối trang.
+- Vòng GPA ở phần Học vấn: `style="--p:81.75"` là phần trăm.
 - Ngoại ngữ (thanh ngang): `style="--w:40%"`.
 - Số đếm ở phần mở đầu: `data-count="25"` (ghi cả số trong thẻ để tắt JS vẫn đúng).
 - Chữ tự gõ: thuộc tính `data-words` của thẻ `.typed`.

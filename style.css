@@ -181,7 +181,6 @@ button { font: inherit; color: inherit; }
   -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 28%, #000 30%, transparent 78%);
   mask-image: radial-gradient(ellipse 75% 60% at 50% 28%, #000 30%, transparent 78%);
 }
-.net { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; }
 .hero-in { display: grid; grid-template-columns: 1.3fr .9fr; align-items: center; gap: 48px; }
 
 .badge {
@@ -565,10 +564,7 @@ button { font: inherit; color: inherit; }
 .ict-lbl span { font-size: 11.5px; color: var(--muted); }
 .ict-lbl em { margin-top: 8px; font-style: normal; font-size: 12px; color: var(--ok); letter-spacing: .1em; }
 
-/* ---------- Kỹ năng ---------- */
-.rings { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
-.skill { padding: 24px 12px 22px; text-align: center; }
-.skill:hover { transform: translateY(-6px); }
+/* ---------- Kỹ năng (thanh cấp độ ở pixel.css), vòng GPA ---------- */
 .dial { position: relative; width: 112px; height: 112px; margin: 0 auto; }
 .dial svg { width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible; }
 .dial circle { fill: none; stroke-width: 8; }
@@ -583,8 +579,6 @@ button { font: inherit; color: inherit; }
 .dial-val { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; }
 .dial-val b { font-size: 26px; font-weight: 800; line-height: 1; }
 .dial-val small { margin-top: 3px; font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
-.skill h3 { margin-top: 14px; font-size: 16px; font-weight: 700; }
-.skill p { font-size: 13px; color: var(--muted); }
 
 .groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 20px; }
 .group { padding: 24px; }
@@ -687,7 +681,6 @@ button { font: inherit; color: inherit; }
 
 /* ---------- Màn hình vừa ---------- */
 @media (max-width: 1100px) {
-  .rings { grid-template-columns: repeat(3, 1fr); }
   .node { flex-direction: column; align-items: flex-start; gap: 10px; }
   .pipe { flex-basis: 36px; }
   .menu a { padding: 8px 10px; font-size: 14px; }
@@ -741,8 +734,6 @@ button { font: inherit; color: inherit; }
   .nav-right .btn-sm { display: none; }
   .cta .btn { flex: 1 1 100%; }
   .facts { grid-template-columns: 1fr; }
-  .rings { grid-template-columns: repeat(2, 1fr); }
-  .dial { width: 100px; height: 100px; }
   .section { padding: 80px 0; }
   .sec-head { margin-bottom: 40px; }
   .tl { padding-left: 46px; }
@@ -773,7 +764,7 @@ button { font: inherit; color: inherit; }
 
 /* ---------- In ---------- */
 @media print {
-  .bg, .net, .nav, .progress, .to-top, .toast, .marquee, .viz, .hero-visual, .flow-wrap .flow { display: none !important; }
+  .bg, .nav, .progress, .to-top, .toast, .marquee, .viz, .hero-visual, .flow-wrap .flow { display: none !important; }
   body { background: #fff; color: #111; }
   .card { background: none; border-color: #ccc; }
   .grad, .name .grad { color: #1f3b5c; background: none; -webkit-text-fill-color: #1f3b5c; }

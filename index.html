@@ -15,9 +15,12 @@
 <script>document.documentElement.classList.replace('no-js', 'js')</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="pixel.css">
 <script src="script.js" defer></script>
+<script src="sprites.js" defer></script>
+<script src="pixel.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#gioi-thieu">Bỏ qua tới nội dung</a>
@@ -79,7 +82,7 @@
 
   <!-- ================= MỞ ĐẦU ================= -->
   <section class="hero">
-    <canvas class="net" aria-hidden="true"></canvas>
+    <canvas class="sky" aria-hidden="true"></canvas>
     <div class="container">
       <div class="hero-in">
         <div class="hero-text">
@@ -114,7 +117,15 @@
           </div>
         </div>
       </div>
+    </div>
 
+    <!-- Dải phong cảnh pixel; bấm vào nhân vật để trò chuyện (vẽ bằng pixel.js) -->
+    <div class="land">
+      <canvas aria-hidden="true"></canvas>
+      <button class="npc" type="button" aria-label="Nói chuyện với Doanh" aria-haspopup="dialog" aria-expanded="false"><canvas width="10" height="26"></canvas></button>
+    </div>
+
+    <div class="container">
       <div class="flow-wrap reveal">
         <p class="flow-cap"><span class="pulse"></span>Luồng dữ liệu tôi xây dựng mỗi ngày</p>
         <div class="flow">
@@ -345,13 +356,13 @@
         <p>Mức độ tự đánh giá trên thang 5.</p>
       </div>
 
-      <div class="rings">
-        <div class="skill card glow reveal"><div class="dial" style="--p:80"><svg viewBox="0 0 112 112"><circle class="trk" cx="56" cy="56" r="48"/><circle class="bar" cx="56" cy="56" r="48"/></svg><div class="dial-val"><b>4<small>/5</small></b></div></div><h3>Python</h3><p>Lập trình</p></div>
-        <div class="skill card glow reveal" style="--d:.06s"><div class="dial" style="--p:80"><svg viewBox="0 0 112 112"><circle class="trk" cx="56" cy="56" r="48"/><circle class="bar" cx="56" cy="56" r="48"/></svg><div class="dial-val"><b>4<small>/5</small></b></div></div><h3>SQL Server</h3><p>Cơ sở dữ liệu</p></div>
-        <div class="skill card glow reveal" style="--d:.12s"><div class="dial" style="--p:60"><svg viewBox="0 0 112 112"><circle class="trk" cx="56" cy="56" r="48"/><circle class="bar" cx="56" cy="56" r="48"/></svg><div class="dial-val"><b>3<small>/5</small></b></div></div><h3>JavaScript</h3><p>Lập trình</p></div>
-        <div class="skill card glow reveal" style="--d:.18s"><div class="dial" style="--p:60"><svg viewBox="0 0 112 112"><circle class="trk" cx="56" cy="56" r="48"/><circle class="bar" cx="56" cy="56" r="48"/></svg><div class="dial-val"><b>3<small>/5</small></b></div></div><h3>C#</h3><p>Lập trình</p></div>
-        <div class="skill card glow reveal" style="--d:.24s"><div class="dial" style="--p:60"><svg viewBox="0 0 112 112"><circle class="trk" cx="56" cy="56" r="48"/><circle class="bar" cx="56" cy="56" r="48"/></svg><div class="dial-val"><b>3<small>/5</small></b></div></div><h3>PostgreSQL</h3><p>Cơ sở dữ liệu</p></div>
-        <div class="skill card glow reveal" style="--d:.3s"><div class="dial" style="--p:60"><svg viewBox="0 0 112 112"><circle class="trk" cx="56" cy="56" r="48"/><circle class="bar" cx="56" cy="56" r="48"/></svg><div class="dial-val"><b>3<small>/5</small></b></div></div><h3>BT-Basic</h3><p>Kiểm thử ICT</p></div>
+      <div class="lvls">
+        <div class="lvl reveal"><span class="lvl-ic" data-px="py"><svg class="icon"><use href="#i-code"/></svg></span><div class="lvl-name"><h3>Python</h3><p>Lập trình</p></div><span class="lvl-num" aria-label="Mức 4/5">LV 4<small>/5</small></span><span class="lvl-bar" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div>
+        <div class="lvl reveal" style="--d:.06s"><span class="lvl-ic" data-px="db"><svg class="icon"><use href="#i-db"/></svg></span><div class="lvl-name"><h3>SQL Server</h3><p>Cơ sở dữ liệu</p></div><span class="lvl-num" aria-label="Mức 4/5">LV 4<small>/5</small></span><span class="lvl-bar" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></div>
+        <div class="lvl reveal" style="--d:.12s"><span class="lvl-ic" data-px="js"><svg class="icon"><use href="#i-code"/></svg></span><div class="lvl-name"><h3>JavaScript</h3><p>Lập trình</p></div><span class="lvl-num" aria-label="Mức 3/5">LV 3<small>/5</small></span><span class="lvl-bar" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+        <div class="lvl reveal" style="--d:.18s"><span class="lvl-ic" data-px="cs"><svg class="icon"><use href="#i-code"/></svg></span><div class="lvl-name"><h3>C#</h3><p>Lập trình</p></div><span class="lvl-num" aria-label="Mức 3/5">LV 3<small>/5</small></span><span class="lvl-bar" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+        <div class="lvl reveal" style="--d:.24s"><span class="lvl-ic" data-px="pg"><svg class="icon"><use href="#i-db"/></svg></span><div class="lvl-name"><h3>PostgreSQL</h3><p>Cơ sở dữ liệu</p></div><span class="lvl-num" aria-label="Mức 3/5">LV 3<small>/5</small></span><span class="lvl-bar" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
+        <div class="lvl reveal" style="--d:.3s"><span class="lvl-ic" data-px="chip"><svg class="icon"><use href="#i-chip"/></svg></span><div class="lvl-name"><h3>BT-Basic</h3><p>Kiểm thử ICT</p></div><span class="lvl-num" aria-label="Mức 3/5">LV 3<small>/5</small></span><span class="lvl-bar" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></div>
       </div>
 
       <div class="groups">
@@ -434,11 +445,37 @@
 </main>
 
 <footer class="footer">
+  <canvas class="meadow" aria-hidden="true"></canvas>
   <div class="container">
     <span>© 2026 Nguyễn Ngọc Doanh</span>
     <span>Cập nhật tháng 10/2026 · <a href="en/" lang="en">English version</a></span>
   </div>
 </footer>
+
+<div class="dlg" role="dialog" aria-label="Trò chuyện với Doanh" hidden>
+  <div class="dlg-box" tabindex="-1">
+    <div class="dlg-body">
+      <p class="dlg-text" aria-hidden="true"></p>
+      <p class="sr-only dlg-live" aria-live="polite"></p>
+      <div class="dlg-actions" hidden>
+        <a class="btn btn-primary btn-sm" href="assets/cv/CV_Nguyen_Ngoc_Doanh_VI.pdf"><svg class="icon"><use href="#i-down"/></svg>Tải CV</a>
+        <a class="btn btn-ghost btn-sm" href="mailto:doanh.nn.work@gmail.com"><svg class="icon"><use href="#i-mail"/></svg>Gửi email</a>
+      </div>
+      <span class="dlg-hint" title="Bấm để đọc tiếp" aria-hidden="true"></span>
+    </div>
+    <div class="dlg-face" aria-hidden="true">
+      <span class="dlg-portrait"><canvas width="16" height="16"></canvas></span>
+      <b class="dlg-name">Doanh</b>
+    </div>
+    <button class="dlg-x" type="button" aria-label="Đóng hộp thoại">&times;</button>
+  </div>
+  <ul class="dlg-lines" hidden>
+    <li>Chào bạn! Mình là Doanh, đang làm IT phát triển hệ thống ở Intops Việt Nam.</li>
+    <li>Mỗi ngày mình đưa dữ liệu từ máy dưới xưởng vào SQL Server, rồi lên ERP, MES, HRM và dashboard.</li>
+    <li>Trước đó mình làm Test Engineer ở Fuyu, chăm sóc 25 máy ICT Keysight 3070 trên 4 line sản xuất.</li>
+    <li>Muốn xem kỹ hơn thì tải CV, hoặc gửi email cho mình nhé!</li>
+  </ul>
+</div>
 
 <button class="to-top" type="button" aria-label="Lên đầu trang">
   <svg class="pr" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/></svg>
