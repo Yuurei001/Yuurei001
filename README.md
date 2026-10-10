@@ -9,6 +9,9 @@ dòng thời gian tự vẽ khi cuộn, thẻ dự án nghiêng 3D.
 - Dải phong cảnh đêm: nhà xưởng, cột điện kéo cáp, gói dữ liệu chạy trên dây vào tủ máy chủ SQL.
 - Nhân vật đi trên cỏ, bấm vào (hoặc Tab rồi Enter) để mở hộp thoại kiểu game, Esc để đóng.
 - Biểu tượng pixel, thanh cấp độ kỹ năng 5 ô, mèo đuổi bit dữ liệu ở chân trang.
+- Khối vuông gom thành hình: chân dung pixel ở đầu trang (khi chưa có `avatar.jpg`, bấm đúp để gom lại),
+  huy chương, chip AI, quyển sách ở phần Học vấn. Rê chuột vào thì các khối dạt ra rồi quay về.
+- Nổ pixel vòng tròn đồng tâm: khi hình gom xong, khi bấm chuột, khi thanh kỹ năng đầy.
 
 ```
 index.html          Bản tiếng Việt
@@ -59,6 +62,7 @@ Sửa thẳng trong `index.html` và `en/index.html`. Nhớ sửa cả hai bản
 - Mức kỹ năng (thanh 5 ô): số ô có `class="on"` là mức, sửa cả chữ `LV 4<small>/5</small>` và `aria-label`.
   Biểu tượng chọn bằng `data-px` (tên hình trong `sprites.js`, ví dụ `py`, `db`, `js`).
 - Câu thoại của nhân vật: các thẻ `<li>` trong `<ul class="dlg-lines">` ở cuối trang.
+- Hình gom từ khối vuông: `<canvas class="badge-art" data-art="ai">`, tên hình nằm trong `PX.art` của `sprites.js`.
 - Vòng GPA ở phần Học vấn: `style="--p:81.75"` là phần trăm.
 - Ngoại ngữ (thanh ngang): `style="--w:40%"`.
 - Số đếm ở phần mở đầu: `data-count="25"` (ghi cả số trong thẻ để tắt JS vẫn đúng).

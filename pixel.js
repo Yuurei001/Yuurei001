@@ -96,6 +96,248 @@
     document.addEventListener('visibilitychange', sync);
   }
 
+  /* ---------- Nổ pixel: các vòng tròn đồng tâm lan ra kèm tia vuông ---------- */
+  // Vẽ trên một lớp canvas phủ màn hình, độ phân giải bằng 1/3 để giữ nét pixel
+  const BS = 3;
+  const BURST = ['#22d3ee', '#a5f3fc', '#6366f1', '#a855f7', '#fde68a'];
+  const fx = document.createElement('canvas');
+  fx.className = 'fx';
+  fx.setAttribute('aria-hidden', 'true');
+  document.body.append(fx);
+  const fctx = fx.getContext('2d');
+  const blasts = [];
+  let fxRaf = 0;
+  const sizeFx = () => {
+    fx.width = Math.ceil(innerWidth / BS);
+    fx.height = Math.ceil(innerHeight / BS);
+    fx.style.width = fx.width * BS + 'px';
+    fx.style.height = fx.height * BS + 'px';
+  };
+  // Vòng tròn rỗng một điểm ảnh (thuật toán điểm giữa)
+  function ring(ctx, cx, cy, r) {
+    let x = r, y = 0, e = 1 - r;
+    while (x >= y) {
+      for (const [a, b] of [[x, y], [y, x], [-y, x], [-x, y], [-x, -y], [-y, -x], [y, -x], [x, -y]]) ctx.fillRect(cx + a, cy + b, 1, 1);
+      y++;
+      if (e < 0) e += 2 * y + 1; else { x--; e += 2 * (y - x) + 1; }
+    }
+  }
+  // x, y theo px màn hình; size 1 = cỡ thường
+  function burst(x, y, size = 1, colors = BURST) {
+    if (reduce) return;
+    const n = Math.round(12 * size);
+    blasts.push({
+      x: x / BS | 0, y: y / BS | 0, t0: now(), size, colors,
+      bits: Array.from({ length: n }, (_, i) => ({
+        a: i / n * Math.PI * 2 + Math.random() * .4,
+        v: (14 + Math.random() * 14) * size,
+        c: colors[i % colors.length],
+      })),
+    });
+    if (!fxRaf) fxRaf = requestAnimationFrame(drawFx);
+  }
+  function drawFx(t) {
+    fctx.clearRect(0, 0, fx.width, fx.height);
+    for (let i = blasts.length - 1; i >= 0; i--) {
+      const b = blasts[i], k = (t - b.t0) / (650 + 250 * b.size);
+      if (k >= 1) { blasts.splice(i, 1); continue; }
+      // Ba vòng nối đuôi nhau, vòng sau trễ hơn vòng trước
+      for (let j = 0; j < 3; j++) {
+        const kk = k * 1.35 - j * .17;
+        if (kk <= 0 || kk >= 1) continue;
+        const e = 1 - Math.pow(1 - kk, 3);
+        fctx.globalAlpha = (1 - kk) * (j ? .7 : 1);
+        fctx.fillStyle = b.colors[j % b.colors.length];
+        ring(fctx, b.x, b.y, Math.max(1, Math.round((3 + j * 2 + 20 * e) * b.size)));
+      }
+      // Tia vuông bay ra rồi rơi nhẹ
+      const e = 1 - Math.pow(1 - k, 2);
+      fctx.globalAlpha = 1 - k;
+      for (const p of b.bits) {
+        fctx.fillStyle = p.c;
+        const px = Math.round(b.x + Math.cos(p.a) * p.v * e);
+        const py = Math.round(b.y + Math.sin(p.a) * p.v * e + 10 * k * k);
+        const sz = k < .5 ? 2 : 1;
+        fctx.fillRect(px, py, sz, sz);
+      }
+      // Lóe sáng ở tâm lúc đầu
+      if (k < .15) { fctx.globalAlpha = 1; fctx.fillStyle = '#fff'; fctx.fillRect(b.x - 1, b.y - 1, 3, 3); }
+    }
+    fctx.globalAlpha = 1;
+    fxRaf = blasts.length ? requestAnimationFrame(drawFx) : 0;
+  }
+  const centerOf = el => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+  if (!reduce) {
+    sizeFx();
+    addEventListener('resize', sizeFx);
+    // Bấm ở đâu nổ ở đó; nút, liên kết và nhân vật thì nổ to hơn từ giữa
+    document.addEventListener('pointerdown', e => {
+      if (e.button !== 0) return;
+      const el = e.target.closest?.('a, button');
+      if (el) burst(...centerOf(el), 1.3);
+      else burst(e.clientX, e.clientY, .8);
+    });
+    // Bấm bằng bàn phím (Enter/Space) không có tọa độ chuột
+    document.addEventListener('click', e => {
+      const el = e.target.closest?.('a, button');
+      if (e.detail === 0 && el) burst(...centerOf(el), 1.3);
+    });
+  }
+
+  /* ---------- Khối vuông gom lại thành hình ---------- */
+  // Mỗi điểm ảnh của hình là một khối bay từ vị trí ngẫu nhiên về đúng chỗ; gom xong thì nổ vòng tròn.
+  // Rê chuột vào thì các khối gần con trỏ dạt ra rồi tự quay về.
+  function mosaic(cv, rows, opt = {}) {
+    const ctx = cv.getContext('2d');
+    const cols = rows[0].length, rowsN = rows.length;
+    const cells = [];
+    rows.forEach((row, j) => [...row].forEach((ch, i) => {
+      if (pal[ch]) cells.push({ i, j, c: pal[ch], dx: 0, dy: 0 });
+    }));
+    let u = 1, W = 0, H = 0, t0 = 0, raf = 0, done = false, active = false, mouse = null;
+    const dur = opt.dur || 1500;
+
+    function size() {
+      const r = cv.getBoundingClientRect();
+      if (!r.width) return;
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      W = Math.round(r.width * dpr); H = Math.round(r.height * dpr);
+      cv.width = W; cv.height = H;
+      u = Math.max(1, Math.floor(Math.min(W / cols, H / rowsN)));
+      const ox = (W - u * cols) / 2 | 0, oy = (H - u * rowsN) / 2 | 0;
+      const rnd = seeded(cols * 7 + cells.length);
+      for (const c of cells) {
+        c.x = ox + c.i * u; c.y = oy + c.j * u;
+        // Điểm xuất phát rải trên một vòng rộng quanh hình
+        const a = rnd() * Math.PI * 2, rr = (.55 + rnd() * .7) * Math.max(W, H);
+        c.sx = W / 2 + Math.cos(a) * rr; c.sy = H / 2 + Math.sin(a) * rr;
+        // Khối gần tâm về trước, khối ở viền về sau
+        c.d = Math.hypot(c.i + .5 - cols / 2, c.j + .5 - rowsN / 2) / (cols * .7) * .45 + rnd() * .2;
+      }
+      if (active && (reduce || done)) draw(now());
+    }
+
+    function draw(t) {
+      ctx.clearRect(0, 0, W, H);
+      const k = reduce ? 1 : Math.min(1, (t - t0) / dur);
+      let moving = !done;
+      for (const c of cells) {
+        let x = c.x, y = c.y;
+        if (!done) {
+          const kk = Math.min(1, Math.max(0, (k - c.d * .6) / .55));
+          const e = 1 - Math.pow(1 - kk, 3);
+          x = c.sx + (c.x - c.sx) * e; y = c.sy + (c.y - c.sy) * e;
+          ctx.globalAlpha = Math.min(1, kk * 3);
+        }
+        // Đẩy khối ra xa con trỏ, lò xo kéo về chỗ cũ
+        let tx = 0, ty = 0;
+        if (mouse) {
+          const ddx = x + u / 2 - mouse.x, ddy = y + u / 2 - mouse.y, d = Math.hypot(ddx, ddy), R = u * 7;
+          if (d < R && d > 0) { const f = (1 - d / R) * u * 3.2; tx = ddx / d * f; ty = ddy / d * f; }
+        }
+        c.dx += (tx - c.dx) * .18; c.dy += (ty - c.dy) * .18;
+        if (Math.abs(c.dx - tx) + Math.abs(c.dy - ty) > .3) moving = true;
+        ctx.fillStyle = c.c;
+        ctx.fillRect(Math.round(x + c.dx), Math.round(y + c.dy), u, u);
+      }
+      ctx.globalAlpha = 1;
+      if (!done && k >= 1) {
+        done = true;
+        cv.classList.add('built');
+        opt.onDone?.();
+      }
+      return moving;
+    }
+
+    const loop = t => { raf = draw(t) ? requestAnimationFrame(loop) : 0; };
+    const kick = () => { if (!raf && !reduce && active) raf = requestAnimationFrame(loop); };
+
+    if (!reduce) {
+      const host = opt.host || cv;
+      host.addEventListener('pointermove', e => {
+        if (!done) return;
+        const r = cv.getBoundingClientRect(), s = W / r.width;
+        mouse = { x: (e.clientX - r.left) * s, y: (e.clientY - r.top) * s };
+        kick();
+      });
+      host.addEventListener('pointerleave', () => { mouse = null; kick(); });
+    }
+    return {
+      size,
+      start() {
+        if (active) return;
+        active = true;
+        size();
+        t0 = now();
+        if (reduce) { done = true; draw(t0); cv.classList.add('built'); } else kick();
+      },
+      replay() {
+        if (reduce || !done) return;
+        done = false;
+        cv.classList.remove('built');
+        t0 = now();
+        kick();
+      },
+    };
+  }
+
+  const mosaics = [];
+
+  // Chân dung đầu trang: dùng khi chưa có ảnh thật avatar.jpg; bấm đúp để gom lại lần nữa
+  const photo = $('.photo');
+  if (photo && PX.art?.portrait) {
+    const img = photo.querySelector('img');
+    const go = () => {
+      if (img?.isConnected && img.naturalWidth) return;
+      const cv = document.createElement('canvas');
+      cv.className = 'px-portrait';
+      cv.setAttribute('aria-hidden', 'true');
+      photo.append(cv);
+      photo.classList.add('px-on');
+      const m = mosaic(cv, PX.art.portrait, {
+        host: $('.portrait'), dur: 1900,
+        onDone: () => burst(...centerOf(photo), 2.2),
+      });
+      mosaics.push(m);
+      setTimeout(m.start, 450);
+      $('.portrait').addEventListener('dblclick', () => m.replay());
+    };
+    if (img && !img.complete) {
+      img.addEventListener('load', go);
+      img.addEventListener('error', () => setTimeout(go));
+    } else go();
+  }
+
+  // Huy hiệu ở phần Học vấn: gom lại khi cuộn tới
+  $$('.badge-art').forEach(cv => {
+    const rows = PX.art?.[cv.dataset.art];
+    if (!rows) return;
+    const m = mosaic(cv, rows, {
+      host: cv.closest('.award') || cv, dur: 1300,
+      onDone: () => burst(...centerOf(cv), 1.2),
+    });
+    mosaics.push(m);
+    new IntersectionObserver(([e], ob) => {
+      if (!e.isIntersecting) return;
+      ob.disconnect();
+      setTimeout(m.start, +(cv.dataset.delay || 0));
+    }, { threshold: .5 }).observe(cv);
+  });
+
+  /* ---------- Thanh kỹ năng: ô cuối sáng lên thì nổ một vòng nhỏ như lúc lên cấp ---------- */
+  $$('.lvl').forEach(card => {
+    const ons = $$('.lvl-bar i.on', card);
+    const last = ons[ons.length - 1];
+    if (!last) return;
+    new IntersectionObserver(([e], ob) => {
+      if (!e.isIntersecting) return;
+      ob.disconnect();
+      // Khớp với pixel.css: ô thứ i sáng sau .4s + i * .16s, cộng độ trễ hiện dần của thẻ
+      const delay = 400 + (ons.length - 1) * 160 + (parseFloat(card.style.getPropertyValue('--d')) || 0) * 1000 + 250;
+      setTimeout(() => burst(...centerOf(last), .9), delay);
+    }, { threshold: .6 }).observe(card);
+  });
+
   /* ---------- Biểu tượng pixel thay cho biểu tượng nét mảnh ---------- */
   const iconURLs = {};
   function iconURL(key) {
@@ -627,7 +869,7 @@
   }
 
   /* ---------- Dựng lại khi đổi cỡ màn hình hoặc phông chữ tải xong ---------- */
-  const relayout = () => { buildLand?.(); sizeSky?.(); buildMeadow?.(); };
+  const relayout = () => { buildLand?.(); sizeSky?.(); buildMeadow?.(); mosaics.forEach(m => m.size()); };
   relayout();
   let rt;
   const later = () => { clearTimeout(rt); rt = setTimeout(relayout, 150); };

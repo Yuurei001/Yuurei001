@@ -141,12 +141,47 @@
 .js .lvl .lvl-bar i { transition: background-color 0s, box-shadow 0s; transition-delay: calc(.4s + var(--i) * .16s); }
 .js .lvl:not(.in) .lvl-bar i.on { background: #111a2e; box-shadow: inset 0 0 0 2px #04070e; }
 
+/* ---------- Lớp hiệu ứng nổ vòng tròn, phủ màn hình ---------- */
+.fx { position: fixed; top: 0; left: 0; z-index: 80; pointer-events: none; image-rendering: pixelated; }
+
+/* ---------- Chân dung gom từ khối vuông (khi chưa có avatar.jpg) ---------- */
+.px-portrait { position: absolute; left: 7%; top: 12%; width: 86%; height: 88%; image-rendering: pixelated; }
+.photo.px-on > span { opacity: 0; transition: opacity .6s; }
+.photo.px-on { background: radial-gradient(circle at 50% 38%, #1b3256, #0a1020 72%); }
+.px-portrait.built { filter: drop-shadow(0 0 18px rgba(34, 211, 238, .25)); }
+
+/* ---------- Học vấn: huy hiệu và bài báo ---------- */
+.badge-art { flex: none; width: 96px; height: 96px; image-rendering: pixelated; }
+.badge-art.built { filter: drop-shadow(0 6px 14px rgba(250, 204, 21, .18)); }
+.js .edu > .ic-box { display: none; }
+.edu > .badge-art { width: 104px; height: 104px; }
+.award { display: flex; align-items: center; gap: 30px; margin-top: 18px; padding: 28px 34px; }
+.award h3 { font-size: 18px; font-weight: 700; line-height: 1.35; }
+.award .company { margin-top: 2px; font-size: 14.5px; }
+.award .tags { margin-top: 12px; }
+.paper { display: flex; align-items: flex-start; gap: 26px; margin-top: 18px; padding: 28px 30px; }
+.paper .badge-art { width: 112px; height: 112px; }
+.paper-kicker {
+  display: inline-block; padding: 0 8px; margin-bottom: 10px;
+  font-family: var(--pixel); font-size: 20px; line-height: 1.3; letter-spacing: .04em; color: #fde68a;
+  background: rgba(250, 204, 21, .1); box-shadow: inset 0 0 0 2px rgba(250, 204, 21, .35);
+}
+.paper h3 { font-size: 19px; font-weight: 700; line-height: 1.4; }
+.paper h3 a { background: linear-gradient(var(--c1), var(--c1)) 0 100% / 0 2px no-repeat; transition: background-size .35s var(--ease), color .2s; }
+.paper h3 a:hover { color: #a5f3fc; background-size: 100% 2px; }
+.paper-authors { margin-top: 8px; font-size: 14px; color: var(--muted); }
+.paper-authors b { color: var(--text); font-weight: 600; }
+.paper-book { margin-top: 4px; font-size: 13.5px; color: var(--dim); }
+.paper-desc { margin-top: 12px; font-size: 15px; color: #c4cfdf; }
+.paper .tags { margin-top: 14px; }
+.paper-link { margin-top: 18px; }
+
 /* ---------- Bãi cỏ chân trang ---------- */
 .footer { position: relative; }
 .meadow { position: absolute; left: 0; bottom: 100%; pointer-events: none; image-rendering: pixelated; }
 
 /* ---------- Không có JS: ẩn phần chỉ vẽ được bằng canvas ---------- */
-.no-js .land, .no-js .sky, .no-js .meadow, .no-js .dlg { display: none; }
+.no-js .land, .no-js .sky, .no-js .meadow, .no-js .dlg, .no-js .badge-art { display: none; }
 
 @media (max-width: 900px) {
   .lvls { grid-template-columns: repeat(2, 1fr); }
@@ -154,6 +189,11 @@
 }
 @media (max-width: 600px) {
   .lvls { grid-template-columns: 1fr; }
+  .award { gap: 16px; padding: 20px; }
+  .badge-art, .edu > .badge-art { width: 76px; height: 76px; }
+  .paper { flex-direction: column; gap: 14px; padding: 22px 20px; }
+  .paper .badge-art { width: 80px; height: 80px; }
+  .paper h3 { font-size: 17px; }
   .tl-dot.px-on { --fw: 4px; left: -48px; width: 30px; height: 30px; top: 22px; }
   .tl-dot.px-on .px-ic { width: 22px; height: 22px; }
   .dlg { bottom: 12px; }
@@ -169,5 +209,5 @@
   .dlg { transition: none; }
 }
 @media print {
-  .land, .sky, .meadow, .dlg { display: none !important; }
+  .land, .sky, .meadow, .dlg, .fx, .badge-art, .px-portrait { display: none !important; }
 }
