@@ -9,7 +9,7 @@ dòng thời gian tự vẽ khi cuộn, thẻ dự án nghiêng 3D.
 - Dải phong cảnh đêm: nhà xưởng, cột điện kéo cáp, gói dữ liệu chạy trên dây vào tủ máy chủ SQL.
 - Nhân vật đi trên cỏ, bấm vào (hoặc Tab rồi Enter) để mở hộp thoại kiểu game, Esc để đóng.
 - Biểu tượng pixel, thanh cấp độ kỹ năng 5 ô, mèo đuổi bit dữ liệu ở chân trang.
-- Khối vuông gom thành hình: chân dung pixel ở đầu trang (khi chưa có `avatar.jpg`, bấm đúp để gom lại),
+- Khối vuông gom thành hình: chân dung pixel ở đầu trang (bấm đúp để gom lại),
   huy chương, chip AI, quyển sách ở phần Học vấn. Rê chuột vào thì các khối dạt ra rồi quay về.
 - Nổ pixel vòng tròn đồng tâm: khi hình gom xong, khi bấm chuột, khi thanh kỹ năng đầy.
 - Doanh dẫn đường: cuộn qua ảnh chân dung thì ảnh vỡ thành khối, bay xuống góc trái và thành nhân vật đứng trên
@@ -31,7 +31,6 @@ guide.js            Doanh dẫn đường ở góc màn hình
 extras.js           Thẻ STAGE, thông báo thành tựu, bình minh, mã bí mật
 favicon.svg         Biểu tượng tab
 assets/cv/          CV PDF (tiếng Việt, tiếng Anh)
-avatar.jpg          Ảnh chân dung (tự thêm vào; chưa có thì hiện chữ ND)
 .nojekyll           Để GitHub Pages không xử lý Jekyll
 ```
 
@@ -60,8 +59,7 @@ Bản tiếng Anh nằm ở `https://<tài-khoản>.github.io/en/`.
 
 ## Ảnh chân dung
 
-Đặt ảnh tên `avatar.jpg` ngay trong thư mục này (cạnh `index.html`). Nên dùng ảnh vuông hoặc dọc, khoảng 600x600 px trở lên.
-Ảnh hiện trong khung tròn ở phần mở đầu, và cũng được CV PDF dùng khi xuất lại.
+Trang chỉ dùng chân dung pixel (`PX.art.portrait` trong `sprites.js`), không dùng ảnh thật.
 
 ## Sửa nội dung
 

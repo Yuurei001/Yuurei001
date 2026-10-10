@@ -175,7 +175,7 @@
     }));
     return list;
   }
-  // Vị trí từng khối của chân dung; có ảnh thật thì đặt hình chân dung pixel vào khung ảnh
+  // Vị trí từng khối của chân dung (dự phòng: tự tính nếu chân dung chưa dựng xong)
   function portraitCells() {
     if (FX.portrait) return FX.portrait.screenCells();
     const rows = PX.art.portrait, r = photo.getBoundingClientRect();

@@ -291,30 +291,22 @@
   const mosaics = [];
   let portraitMosaic = null;
 
-  // Chân dung đầu trang: dùng khi chưa có ảnh thật avatar.jpg; bấm đúp để gom lại lần nữa
+  // Chân dung pixel ở đầu trang; bấm đúp để gom lại lần nữa
   const photo = $('.photo');
   if (photo && PX.art?.portrait) {
-    const img = photo.querySelector('img');
-    const go = () => {
-      if (img?.isConnected && img.naturalWidth) return;
-      const cv = document.createElement('canvas');
-      cv.className = 'px-portrait';
-      cv.setAttribute('aria-hidden', 'true');
-      photo.append(cv);
-      photo.classList.add('px-on');
-      const m = mosaic(cv, PX.art.portrait, {
-        host: $('.portrait'), dur: 1900,
-        onDone: () => burst(...centerOf(photo), 2.2),
-      });
-      portraitMosaic = m;
-      mosaics.push(m);
-      setTimeout(m.start, 450);
-      $('.portrait').addEventListener('dblclick', () => m.replay());
-    };
-    if (img && !img.complete) {
-      img.addEventListener('load', go);
-      img.addEventListener('error', () => setTimeout(go));
-    } else go();
+    const cv = document.createElement('canvas');
+    cv.className = 'px-portrait';
+    cv.setAttribute('aria-hidden', 'true');
+    photo.append(cv);
+    photo.classList.add('px-on');
+    const m = mosaic(cv, PX.art.portrait, {
+      host: $('.portrait'), dur: 1900,
+      onDone: () => burst(...centerOf(photo), 2.2),
+    });
+    portraitMosaic = m;
+    mosaics.push(m);
+    setTimeout(m.start, 450);
+    $('.portrait').addEventListener('dblclick', () => m.replay());
   }
 
   // Huy hiệu ở phần Học vấn: gom lại khi cuộn tới
