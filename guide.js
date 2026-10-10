@@ -189,30 +189,65 @@
     for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; }
     return a;
   };
-  // Mỗi khối bay theo đường cong từ hình này sang hình kia, đổi màu ở giữa đường
-  function flight(from, to, dur, then) {
-    if (reduce || !from.length || !to.length) return then();
+  // Mỗi khối bay từ hình này sang hình kia. from/to là hàm trả danh sách khối, gọi lại MỖI khung hình
+  // vì trang có thể vẫn đang cuộn trong lúc bay; nhờ vậy khối luôn đáp đúng chỗ hình đang hiện.
+  // Khối tách ra theo hướng từ tâm hình nguồn, lượn vòng rồi hút vào đích; lúc chạm đích nảy nhẹ.
+  function flight(from, to, dur, then, onLand) {
+    let A = from(), B = to();
+    if (reduce || !A.length || !B.length) return then();
     fly.width = innerWidth;
     fly.height = innerHeight;
-    shuffle(from); shuffle(to);
-    const n = Math.max(from.length, to.length);
-    const ps = Array.from({ length: n }, (_, i) => ({
-      a: from[i % from.length], b: to[i % to.length],
-      d: Math.random() * .35, arc: (Math.random() - .5) * 220,
-    }));
+    const n = Math.max(A.length, B.length);
+    const ia = shuffle([...Array(n).keys()].map(i => i % A.length));
+    const ib = shuffle([...Array(n).keys()].map(i => i % B.length));
+    const ca = A.reduce((m, c) => [m[0] + c.x / A.length, m[1] + c.y / A.length], [0, 0]);
+    const ps = ia.map((a, i) => {
+      const c = A[a], ang = Math.atan2(c.y - ca[1], c.x - ca[0]) + (Math.random() - .5) * 1.2;
+      return {
+        a, b: ib[i], d: Math.random() * .28,
+        // tách ra 30-90px theo hướng từ tâm, rồi lượn ngang
+        out: 30 + Math.random() * 60, ang, swirl: (Math.random() < .5 ? -1 : 1) * (60 + Math.random() * 120),
+        spin: (Math.random() - .5) * 2,
+      };
+    });
     const t0 = now();
+    let landed = false;
+    const ease = k => k < .5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2;
     const step = t => {
       const k = (t - t0) / dur;
+      A = from(); B = to();
       fctx.clearRect(0, 0, fly.width, fly.height);
       for (const p of ps) {
-        const kk = Math.min(1, Math.max(0, (k - p.d) / .65));
-        const e = kk < .5 ? 4 * kk ** 3 : 1 - (-2 * kk + 2) ** 3 / 2;
-        const x = p.a.x + (p.b.x - p.a.x) * e + Math.sin(Math.PI * e) * p.arc;
-        const y = p.a.y + (p.b.y - p.a.y) * e;
-        const s = p.a.s + (p.b.s - p.a.s) * e;
-        fctx.fillStyle = e < .55 ? p.a.c : p.b.c;
-        fctx.fillRect(Math.round(x), Math.round(y), Math.ceil(s), Math.ceil(s));
+        const a = A[p.a], b = B[p.b];
+        const kk = Math.min(1, Math.max(0, (k - p.d) / .72));
+        const e = ease(kk);
+        // tách ra lúc đầu, mất dần về cuối; lượn theo hình sin
+        const burstOut = Math.sin(Math.PI * Math.min(1, kk * 1.6)) * p.out * (1 - e);
+        const x = a.x + (b.x - a.x) * e + Math.cos(p.ang) * burstOut + Math.sin(Math.PI * e) * p.swirl * .5;
+        const y = a.y + (b.y - a.y) * e + Math.sin(p.ang) * burstOut - Math.sin(Math.PI * e) * 40;
+        // cỡ khối: phồng lên giữa đường, chạm đích nảy nhẹ
+        const pop = kk > .92 ? 1 + Math.sin((kk - .92) / .08 * Math.PI) * .45 : 1;
+        const sz = (a.s + (b.s - a.s) * e) * (1 + Math.sin(Math.PI * e) * .35) * pop;
+        // vệt sáng mờ phía sau khối đang bay
+        if (kk > 0 && kk < .95) {
+          fctx.globalAlpha = .22;
+          fctx.fillStyle = '#67e8f9';
+          const e2 = ease(Math.max(0, kk - .06));
+          fctx.fillRect(Math.round(a.x + (b.x - a.x) * e2 + Math.sin(Math.PI * e2) * p.swirl * .5),
+            Math.round(a.y + (b.y - a.y) * e2 - Math.sin(Math.PI * e2) * 40), Math.ceil(sz * .7), Math.ceil(sz * .7));
+          fctx.globalAlpha = 1;
+        }
+        fctx.fillStyle = e < .5 ? a.c : b.c;
+        if (p.spin && kk > 0 && kk < 1) {
+          fctx.save();
+          fctx.translate(x + sz / 2, y + sz / 2);
+          fctx.rotate(p.spin * Math.sin(Math.PI * e) * Math.PI);
+          fctx.fillRect(-sz / 2, -sz / 2, sz, sz);
+          fctx.restore();
+        } else fctx.fillRect(Math.round(x), Math.round(y), Math.ceil(sz), Math.ceil(sz));
       }
+      // Phần lớn khối đã đáp thì cho hình đích hiện dần lên
+      if (!landed && k > .78) { landed = true; onLand?.(); }
       if (k < 1) requestAnimationFrame(step);
       else { fctx.clearRect(0, 0, fly.width, fly.height); then(); }
     };
@@ -225,16 +260,14 @@
     root.hidden = false;
     root.classList.add('arriving');
     requestAnimationFrame(() => {
-      const from = portraitCells(), to = guideCells();
       photo.classList.add('away');
-      flight(from, to, 1150, () => {
-        root.classList.remove('arriving');
+      flight(portraitCells, guideCells, 1250, () => {
         state = 'out';
         play();
         FX.burst(...FX.centerOf(cv), 1.2);
         arrive();
         sync();
-      });
+      }, () => root.classList.remove('arriving'));
     });
   }
   function flyHome() {
@@ -244,14 +277,13 @@
     const from = guideCells();
     root.classList.add('leaving');
     pause();
-    flight(from, portraitCells(), 1000, () => {
+    flight(() => from, portraitCells, 1250, () => {
       root.hidden = true;
       root.classList.remove('leaving');
-      photo.classList.remove('away');
       state = 'home';
       FX.burst(...FX.centerOf(photo), 1.3);
       sync();
-    });
+    }, () => photo.classList.remove('away'));
   }
   function sync() {
     if (state === 'moving' || state === want) return;

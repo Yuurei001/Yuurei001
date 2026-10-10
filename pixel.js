@@ -333,6 +333,47 @@
     }, { threshold: .5 }).observe(cv);
   });
 
+  /* ---------- Logo chip ND: tải trang thì gom từ khối, rê chuột thì các khối nảy thành gợn sóng ---------- */
+  const logo = $('.logo');
+  if (logo && PX.logo) {
+    const img = logo.querySelector('img');
+    const cv = document.createElement('canvas');
+    cv.setAttribute('aria-hidden', 'true');
+    img?.replaceWith(cv);
+    const m = mosaic(cv, PX.logo, { dur: 1100, host: logo });
+    mosaics.push(m);
+    m.start();
+    // Gợn sóng: mỗi lần rê vào, các ô nảy lên lần lượt theo khoảng cách tới con trỏ
+    const ctx = cv.getContext('2d');
+    let wave = 0;
+    logo.addEventListener('pointerenter', e => {
+      if (reduce) return;
+      const r = cv.getBoundingClientRect(), ox = (e.clientX - r.left) / r.width * 20, oy = (e.clientY - r.top) / r.height * 20;
+      const t0 = now(), id = ++wave, u = cv.width / 20;
+      const step = t => {
+        if (id !== wave) return;
+        const k = (t - t0) / 700;
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        PX.logo.forEach((row, j) => [...row].forEach((ch, i) => {
+          if (!pal[ch]) return;
+          const d = Math.hypot(i - ox, j - oy) / 12 - k * 1.6;
+          const lift = d < 0 && d > -.5 ? Math.sin(-d / .5 * Math.PI) * u * 1.4 : 0;
+          ctx.fillStyle = lift > u * .6 && ch === 's' ? '#273552' : pal[ch];
+          ctx.fillRect(i * u, j * u - Math.round(lift), u, u);
+        }));
+        if (k < 1) requestAnimationFrame(step);
+        else { ctx.clearRect(0, 0, cv.width, cv.height); drawLogo(); }
+      };
+      requestAnimationFrame(step);
+    });
+    const drawLogo = () => {
+      const u = cv.width / 20;
+      PX.logo.forEach((row, j) => [...row].forEach((ch, i) => {
+        if (pal[ch]) { ctx.fillStyle = pal[ch]; ctx.fillRect(i * u, j * u, u, u); }
+      }));
+    };
+  }
+
   // Chia sẻ cho guide.js
   window.PXFX = { burst, mosaic, blit, centerOf, get portrait() { return portraitMosaic; } };
 

@@ -553,6 +553,30 @@ window.PX.art = {
     ],
 };
 
+// Logo ND trên thanh menu: con chip pixel 20x20, chữ chuyển màu cyan sang tím
+window.PX.logo = [
+  '.....g...g...g......',
+  '..kkkkkkkkkkkkkkkk..',
+  '.ksddddddddddddddsk.',
+  '.kdsssssssssssssssk.',
+  '.kdsssssssssssssssk.',
+  'gkdssssssssssssssskg',
+  '.kdscsssIssiiPpsssk.',
+  '.kdscCssIssissspssk.',
+  '.kdscCssIssissspssk.',
+  'gkdscsCsIssissspsskg',
+  '.kdscsCsIssissspssk.',
+  '.kdscssIIssissspssk.',
+  '.kdscssIIssissspssk.',
+  'gkdscsssIssiiPpssskg',
+  '.kdsssssssssssssssk.',
+  '.kdsssssssssssssssk.',
+  '.kdsssssssssssssssk.',
+  '.kssssssssssssssssk.',
+  '..kkkkkkkkkkkkkkkk..',
+  '.....g...g...g......',
+];
+
 // Doanh dẫn đường (toàn thân 20x30, quay ra trước): các tư thế và chỗ thay khi chớp mắt, khi nói
 window.PX.guide = {
   frames: {

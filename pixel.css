@@ -235,7 +235,9 @@
 .g-x:hover { background: #f43f5e; }
 .g-fly { position: fixed; inset: 0; z-index: 56; pointer-events: none; }
 /* Ảnh chân dung đã bay đi */
-.photo.away > * { visibility: hidden; }
+.photo > * { transition: opacity .35s; }
+.photo.away > * { opacity: 0; transition: none; }
+.g-me { transition: transform .3s var(--ease), opacity .35s; }
 
 /* ---------- Thông báo thành tựu (extras.js) ---------- */
 .achv { position: fixed; top: calc(var(--nav-h) + 14px); right: 18px; z-index: 66; display: grid; gap: 10px; pointer-events: none; }

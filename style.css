@@ -92,16 +92,15 @@ button { font: inherit; color: inherit; }
   border-bottom-color: var(--border);
 }
 .nav-in { display: flex; align-items: center; gap: 24px; height: var(--nav-h); }
+/* Logo: con chip pixel ND (logo.svg; pixel.js thay bằng canvas để các khối nhảy khi rê chuột) */
 .logo {
-  display: grid; place-items: center; flex: none;
-  width: 42px; height: 42px; border-radius: 12px;
-  font-weight: 800; font-size: 15px; letter-spacing: .02em; color: #fff;
-  border: 1.5px solid transparent;
-  background: linear-gradient(var(--bg-2), var(--bg-2)) padding-box, var(--grad) border-box;
-  box-shadow: 0 0 24px rgba(34, 211, 238, .2);
-  transition: transform .3s var(--ease), box-shadow .3s;
+  position: relative; display: grid; place-items: center; flex: none;
+  width: 44px; height: 44px;
+  filter: drop-shadow(0 0 10px rgba(34, 211, 238, .35));
+  transition: transform .3s steps(3), filter .3s;
 }
-.logo:hover { transform: rotate(-6deg) scale(1.06); box-shadow: 0 0 32px rgba(99, 102, 241, .45); }
+.logo img, .logo canvas { display: block; width: 40px; height: 40px; image-rendering: pixelated; }
+.logo:hover { transform: translateY(-2px); filter: drop-shadow(0 0 16px rgba(168, 85, 247, .6)); }
 .menu { display: flex; gap: 2px; margin-left: auto; }
 .menu a {
   position: relative; padding: 8px 13px; border-radius: 10px;
