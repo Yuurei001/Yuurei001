@@ -21,6 +21,8 @@
 <script src="script.js" defer></script>
 <script src="sprites.js" defer></script>
 <script src="pixel.js" defer></script>
+<script src="guide.js" defer></script>
+<script src="extras.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#gioi-thieu">Bỏ qua tới nội dung</a>
@@ -498,6 +500,32 @@
     <li>Muốn xem kỹ hơn thì tải CV, hoặc gửi email cho mình nhé!</li>
   </ul>
 </div>
+
+<!-- Doanh dẫn đường: hiện ở góc trái dưới khi ảnh chân dung khuất (guide.js) -->
+<aside class="guide" aria-label="Doanh dẫn đường" hidden>
+  <div class="g-bubble">
+    <p class="g-text" aria-hidden="true"></p>
+    <p class="sr-only g-live" aria-live="polite"></p>
+    <div class="g-actions" hidden>
+      <a class="btn btn-primary btn-sm" href="assets/cv/CV_Nguyen_Ngoc_Doanh_VI.pdf"><svg class="icon"><use href="#i-down"/></svg>Tải CV</a>
+      <a class="btn btn-ghost btn-sm" href="mailto:doanh.nn.work@gmail.com"><svg class="icon"><use href="#i-mail"/></svg>Gửi email</a>
+    </div>
+    <div class="g-xp"><span class="g-cells" aria-hidden="true"></span><span class="g-step-wrap">Phần <span class="g-step">0/6</span></span></div>
+    <button class="g-x" type="button" aria-label="Ẩn lời thoại">&times;</button>
+  </div>
+  <button class="g-me" type="button" aria-label="Doanh dẫn đường. Bấm để ẩn hoặc hiện lời thoại"><canvas width="28" height="48"></canvas></button>
+  <ul class="g-lines" hidden>
+    <li data-for="top">Mình đi cùng bạn tới cuối trang nhé! Bấm vào mình để ẩn lời thoại.</li>
+    <li data-for="gioi-thieu">Nhà mình ở Bắc Ninh. Mình thích nối dữ liệu từ máy dưới xưởng lên hệ thống quản lý.</li>
+    <li data-for="kinh-nghiem">Năm đầu mình chăm 25 máy ICT ở Fuyu, sau đó chuyển sang làm ERP, MES, HRM ở Intops.</li>
+    <li data-for="du-an">Mấy dự án này mình làm trực tiếp. Rê chuột vào thẻ thử xem, nó nghiêng đó!</li>
+    <li data-for="ky-nang">Python với SQL Server là hai món tủ của mình, LV 4 đó!</li>
+    <li data-for="hoc-van">Cử nhân loại Giỏi, học xong khóa AI của Samsung, và có bài báo YOLOv8 được Springer in nè!</li>
+    <li data-for="lien-he">Cảm ơn bạn đã xem tới cuối! Gửi email hoặc tải CV giúp mình nhé.</li>
+    <li data-for="konami">Ồ, bạn tìm ra mã bí mật rồi! Mưa khối vuông tặng bạn đó!</li>
+  </ul>
+</aside>
+<div class="achv" role="status" aria-live="polite"></div>
 
 <button class="to-top" type="button" aria-label="Lên đầu trang">
   <svg class="pr" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/></svg>

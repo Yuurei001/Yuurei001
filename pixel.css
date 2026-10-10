@@ -180,6 +180,105 @@
 .footer { position: relative; }
 .meadow { position: absolute; left: 0; bottom: 100%; pointer-events: none; image-rendering: pixelated; }
 
+/* ---------- Doanh dẫn đường ở góc trái dưới (guide.js) ---------- */
+.guide {
+  position: fixed; left: 18px; bottom: 14px; z-index: 55;
+  display: flex; align-items: flex-end; gap: 4px;
+  pointer-events: none;
+}
+.guide[hidden], .guide [hidden] { display: none !important; }
+.guide > * { pointer-events: auto; }
+.g-me {
+  order: -1; padding: 0; border: 0; background: none; cursor: pointer;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, .55));
+  transition: transform .3s var(--ease), opacity .3s;
+}
+.g-me canvas { display: block; image-rendering: pixelated; }
+.g-me:hover { transform: translateY(-4px); }
+.g-me:focus-visible { outline: 2px dashed var(--c1); outline-offset: 2px; border-radius: 0; }
+/* Lúc các khối đang bay thì ẩn nhân vật thật */
+.guide.arriving .g-me, .guide.leaving .g-me { opacity: 0; transition: none; }
+.guide.arriving .g-bubble, .guide.leaving .g-bubble { display: none; }
+
+.g-bubble {
+  --fw: 12px;
+  position: relative; width: min(330px, calc(100vw - 150px)); margin-bottom: 64px; padding: 6px 8px 4px;
+  border: var(--fw) solid transparent; border-image: var(--px-frame) 4 fill / var(--fw) stretch;
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, .6));
+  opacity: 0; translate: -10px 8px; pointer-events: none;
+  transition: opacity .22s, translate .22s steps(3);
+}
+.guide.talk .g-bubble { opacity: 1; translate: none; pointer-events: auto; }
+/* Đuôi bong bóng chỉ về phía nhân vật */
+.g-bubble::before {
+  content: ""; position: absolute; left: -22px; bottom: 2px;
+  width: 4px; height: 4px; background: #22d3ee;
+  box-shadow: -4px 4px #22d3ee, -8px 8px #04070e, 0 4px #04070e, -4px 8px #04070e;
+}
+.g-text { min-height: 3.2em; font-family: var(--mono); font-size: 13.5px; line-height: 1.6; color: #e6edf7; }
+.g-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.g-actions .btn { padding: 8px 12px; font-size: 13px; }
+.g-xp { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.g-cells { display: flex; gap: 3px; flex: 1; }
+.g-cells i { flex: 1; height: 8px; background: #111a2e; box-shadow: inset 0 0 0 2px #04070e; transition: background-color .3s; }
+.g-cells i.on { background: linear-gradient(#67e8f9 0 3px, #22d3ee 3px); }
+.g-cells i.on:last-child { background: linear-gradient(#fef08a 0 3px, #facc15 3px); }
+.g-step-wrap { font-family: var(--pixel); font-size: 18px; line-height: 1; color: var(--muted); white-space: nowrap; }
+.g-step { color: #a5f3fc; }
+.g-x {
+  position: absolute; top: -20px; right: -20px;
+  display: grid; place-items: center; width: 22px; height: 22px; padding: 0 0 2px;
+  border: 0; cursor: pointer; background: #334155; color: #fff;
+  font-family: var(--pixel); font-size: 20px; line-height: 1;
+  box-shadow: inset 0 0 0 2px #04070e;
+}
+.g-x:hover { background: #f43f5e; }
+.g-fly { position: fixed; inset: 0; z-index: 56; pointer-events: none; }
+/* Ảnh chân dung đã bay đi */
+.photo.away > * { visibility: hidden; }
+
+/* ---------- Thông báo thành tựu (extras.js) ---------- */
+.achv { position: fixed; top: calc(var(--nav-h) + 14px); right: 18px; z-index: 66; display: grid; gap: 10px; pointer-events: none; }
+.achv-item {
+  --fw: 12px;
+  display: flex; align-items: center; gap: 12px; padding: 4px 10px 4px 4px; min-width: 250px;
+  border: var(--fw) solid transparent; border-image: var(--px-frame) 4 fill / var(--fw) stretch;
+  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, .6));
+  animation: achv-in .45s steps(5) both;
+}
+.achv-item.bye { animation: achv-out .35s steps(4) both; }
+.achv-item img { width: 36px; height: 36px; image-rendering: pixelated; flex: none; }
+.achv-item small { display: block; font-family: var(--pixel); font-size: 17px; line-height: 1.1; color: #facc15; letter-spacing: .03em; }
+.achv-item b { display: block; font-size: 14px; font-weight: 600; line-height: 1.35; }
+@keyframes achv-in { from { opacity: 0; translate: 60px 0; } }
+@keyframes achv-out { to { opacity: 0; translate: 60px 0; } }
+
+/* ---------- Thẻ tiêu đề "STAGE" của mỗi phần (extras.js) ---------- */
+.stage { display: block; height: 30px; margin-bottom: 14px; image-rendering: pixelated; }
+.contact-box .stage { margin-inline: auto; }
+
+/* ---------- Bình minh ở cuối trang (extras.js) ---------- */
+.dawn { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; opacity: .32; }
+.footer { background: rgba(6, 10, 19, .72); }
+
+/* ---------- Mưa khối vuông (mã bí mật) ---------- */
+.rain { position: fixed; inset: 0; z-index: 79; pointer-events: none; image-rendering: pixelated; }
+
+@media (max-width: 600px) {
+  .guide { left: 8px; bottom: 8px; }
+  .g-bubble { --fw: 10px; width: calc(100vw - 96px); margin-bottom: 44px; }
+  .g-text { font-size: 12.5px; }
+  .g-step-wrap { font-size: 16px; }
+  .achv { right: 10px; left: 10px; }
+  .achv-item { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-bubble, .achv-item { transition: none; animation: none; }
+}
+@media print {
+  .guide, .g-fly, .achv, .stage, .rain { display: none !important; }
+}
+
 /* ---------- Không có JS: ẩn phần chỉ vẽ được bằng canvas ---------- */
 .no-js .land, .no-js .sky, .no-js .meadow, .no-js .dlg, .no-js .badge-art { display: none; }
 

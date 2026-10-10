@@ -192,7 +192,7 @@
     const cols = rows[0].length, rowsN = rows.length;
     const cells = [];
     rows.forEach((row, j) => [...row].forEach((ch, i) => {
-      if (pal[ch]) cells.push({ i, j, c: pal[ch], dx: 0, dy: 0 });
+      if (pal[ch]) cells.push({ i, j, ch, c: pal[ch], dx: 0, dy: 0 });
     }));
     let u = 1, W = 0, H = 0, t0 = 0, raf = 0, done = false, active = false, mouse = null;
     const dur = opt.dur || 1500;
@@ -208,9 +208,10 @@
       const rnd = seeded(cols * 7 + cells.length);
       for (const c of cells) {
         c.x = ox + c.i * u; c.y = oy + c.j * u;
-        // Điểm xuất phát rải trên một vòng rộng quanh hình
+        // Điểm xuất phát rải trên một vòng rộng quanh hình (inside: rải ngay trong khung)
         const a = rnd() * Math.PI * 2, rr = (.55 + rnd() * .7) * Math.max(W, H);
-        c.sx = W / 2 + Math.cos(a) * rr; c.sy = H / 2 + Math.sin(a) * rr;
+        c.sx = opt.inside ? rnd() * W : W / 2 + Math.cos(a) * rr;
+        c.sy = opt.inside ? rnd() * H : H / 2 + Math.sin(a) * rr;
         // Khối gần tâm về trước, khối ở viền về sau
         c.d = Math.hypot(c.i + .5 - cols / 2, c.j + .5 - rowsN / 2) / (cols * .7) * .45 + rnd() * .2;
       }
@@ -271,6 +272,12 @@
         t0 = now();
         if (reduce) { done = true; draw(t0); cv.classList.add('built'); } else kick();
       },
+      // Vị trí từng khối trên màn hình (px CSS), để guide.js cho các khối bay đi
+      screenCells() {
+        if (!W) size();
+        const r = cv.getBoundingClientRect(), k = r.width / (W || 1);
+        return cells.map(c => ({ x: r.left + c.x * k, y: r.top + c.y * k, s: u * k, ch: c.ch, c: c.c }));
+      },
       replay() {
         if (reduce || !done) return;
         done = false;
@@ -282,6 +289,7 @@
   }
 
   const mosaics = [];
+  let portraitMosaic = null;
 
   // Chân dung đầu trang: dùng khi chưa có ảnh thật avatar.jpg; bấm đúp để gom lại lần nữa
   const photo = $('.photo');
@@ -298,6 +306,7 @@
         host: $('.portrait'), dur: 1900,
         onDone: () => burst(...centerOf(photo), 2.2),
       });
+      portraitMosaic = m;
       mosaics.push(m);
       setTimeout(m.start, 450);
       $('.portrait').addEventListener('dblclick', () => m.replay());
@@ -323,6 +332,9 @@
       setTimeout(m.start, +(cv.dataset.delay || 0));
     }, { threshold: .5 }).observe(cv);
   });
+
+  // Chia sẻ cho guide.js
+  window.PXFX = { burst, mosaic, blit, centerOf, get portrait() { return portraitMosaic; } };
 
   /* ---------- Thanh kỹ năng: ô cuối sáng lên thì nổ một vòng nhỏ như lúc lên cấp ---------- */
   $$('.lvl').forEach(card => {

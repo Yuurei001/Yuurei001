@@ -21,6 +21,8 @@
 <script src="../script.js" defer></script>
 <script src="../sprites.js" defer></script>
 <script src="../pixel.js" defer></script>
+<script src="../guide.js" defer></script>
+<script src="../extras.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#about">Skip to content</a>
@@ -497,6 +499,32 @@
     <li>Want the details? Grab my CV or drop me an email!</li>
   </ul>
 </div>
+
+<!-- Doanh dẫn đường: hiện ở góc trái dưới khi ảnh chân dung khuất (guide.js) -->
+<aside class="guide" aria-label="Doanh the guide" hidden>
+  <div class="g-bubble">
+    <p class="g-text" aria-hidden="true"></p>
+    <p class="sr-only g-live" aria-live="polite"></p>
+    <div class="g-actions" hidden>
+      <a class="btn btn-primary btn-sm" href="../assets/cv/CV_Nguyen_Ngoc_Doanh_EN.pdf"><svg class="icon"><use href="#i-down"/></svg>Download CV</a>
+      <a class="btn btn-ghost btn-sm" href="mailto:doanh.nn.work@gmail.com"><svg class="icon"><use href="#i-mail"/></svg>Send email</a>
+    </div>
+    <div class="g-xp"><span class="g-cells" aria-hidden="true"></span><span class="g-step-wrap">Part <span class="g-step">0/6</span></span></div>
+    <button class="g-x" type="button" aria-label="Hide notes">&times;</button>
+  </div>
+  <button class="g-me" type="button" aria-label="Doanh the guide. Click to show or hide notes"><canvas width="28" height="48"></canvas></button>
+  <ul class="g-lines" hidden>
+    <li data-for="top">I'll walk you to the end of the page! Click me to hide my notes.</li>
+    <li data-for="about">I'm based in Bac Ninh. I love connecting shop-floor machine data to business systems.</li>
+    <li data-for="experience">First I looked after 25 ICT testers at Fuyu, then moved on to ERP, MES and HRM at INTOPS.</li>
+    <li data-for="projects">I built these projects hands-on. Hover a card, it tilts!</li>
+    <li data-for="skills">Python and SQL Server are my go-to tools, level 4!</li>
+    <li data-for="education">B.Sc. with Very Good, the Samsung AI course, and a YOLOv8 paper published by Springer!</li>
+    <li data-for="contact">Thanks for reading to the end! Drop me an email or grab my CV.</li>
+    <li data-for="konami">Whoa, you found the secret code! Enjoy the pixel rain!</li>
+  </ul>
+</aside>
+<div class="achv" role="status" aria-live="polite"></div>
 
 <button class="to-top" type="button" aria-label="Back to top">
   <svg class="pr" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/></svg>

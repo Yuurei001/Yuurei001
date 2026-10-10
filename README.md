@@ -12,6 +12,12 @@ dòng thời gian tự vẽ khi cuộn, thẻ dự án nghiêng 3D.
 - Khối vuông gom thành hình: chân dung pixel ở đầu trang (khi chưa có `avatar.jpg`, bấm đúp để gom lại),
   huy chương, chip AI, quyển sách ở phần Học vấn. Rê chuột vào thì các khối dạt ra rồi quay về.
 - Nổ pixel vòng tròn đồng tâm: khi hình gom xong, khi bấm chuột, khi thanh kỹ năng đầy.
+- Doanh dẫn đường: cuộn qua ảnh chân dung thì ảnh vỡ thành khối, bay xuống góc trái và thành nhân vật đứng trên
+  bệ nổi. Mỗi phần nói một câu, có thanh tiến độ "Phần x/6", tới Liên hệ thì ăn mừng và hiện nút Tải CV, Gửi email.
+  Cuộn lên đầu thì bay về thành ảnh. Bấm vào nhân vật để ẩn hoặc hiện lời thoại.
+- Thẻ "STAGE 0X" ghép từ khối vuông trên mỗi phần, thông báo "Thành tựu mở khóa" ở góc phải,
+  trời ửng bình minh khi cuộn gần cuối.
+- Mã bí mật: gõ ↑↑↓↓←→←→BA (hoặc bấm nhanh 5 lần vào nhân vật) để có mưa khối vuông.
 
 ```
 index.html          Bản tiếng Việt
@@ -20,7 +26,9 @@ style.css           Giao diện, dùng chung
 script.js           Hiệu ứng, dùng chung
 pixel.css           Khung pixel, hộp thoại, thanh cấp độ kỹ năng
 sprites.js          Hình pixel vẽ bằng lưới ký tự (biểu tượng, nhân vật, cây, mèo) và bảng màu
-pixel.js            Vẽ trời sao, dải phong cảnh, nhân vật, hộp thoại, biểu tượng pixel, bãi cỏ
+pixel.js            Vẽ trời sao, dải phong cảnh, nhân vật, hộp thoại, biểu tượng pixel, bãi cỏ, nổ vòng, khối gom
+guide.js            Doanh dẫn đường ở góc màn hình
+extras.js           Thẻ STAGE, thông báo thành tựu, bình minh, mã bí mật
 favicon.svg         Biểu tượng tab
 assets/cv/          CV PDF (tiếng Việt, tiếng Anh)
 avatar.jpg          Ảnh chân dung (tự thêm vào; chưa có thì hiện chữ ND)
@@ -62,6 +70,9 @@ Sửa thẳng trong `index.html` và `en/index.html`. Nhớ sửa cả hai bản
 - Mức kỹ năng (thanh 5 ô): số ô có `class="on"` là mức, sửa cả chữ `LV 4<small>/5</small>` và `aria-label`.
   Biểu tượng chọn bằng `data-px` (tên hình trong `sprites.js`, ví dụ `py`, `db`, `js`).
 - Câu thoại của nhân vật: các thẻ `<li>` trong `<ul class="dlg-lines">` ở cuối trang.
+- Lời của Doanh dẫn đường: `<ul class="g-lines">`, mỗi `<li data-for="...">` ứng với `id` của một phần
+  (`top` là câu chào, `konami` là câu khi gõ mã bí mật).
+- Tên các thành tựu: mảng `ACH` trong `extras.js`.
 - Hình gom từ khối vuông: `<canvas class="badge-art" data-art="ai">`, tên hình nằm trong `PX.art` của `sprites.js`.
 - Vòng GPA ở phần Học vấn: `style="--p:81.75"` là phần trăm.
 - Ngoại ngữ (thanh ngang): `style="--w:40%"`.
